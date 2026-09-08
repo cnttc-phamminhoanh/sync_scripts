@@ -1,0 +1,41 @@
+name: Deploy and Sync Supplier Data
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify .env
+        run: |
+          if [ ! -f .env ]; then
+            echo "❌ .env not found"
+            exit 1
+          fi
+
+      - name: Run sync
+        run: npm run sync
+
+      - name: Check result
+        run: |
+          if grep -q "Sycn success" supquan-sync.log; then
+            echo "✅ Sync success"
+          else
+            echo "❌ Sync failed"
+            exit 1
+          fi
