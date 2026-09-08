@@ -1,6 +1,7 @@
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 const { createClient } = require("@supabase/supabase-js");
 const sql = require("mssql");
-require("dotenv").config();
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
