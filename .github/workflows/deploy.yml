@@ -21,13 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Verify .env
-        run: |
-          if [ ! -f .env ]; then
-            echo "❌ .env not found"
-            exit 1
-          fi
-
       - name: Run sync
         run: npm run sync
 
