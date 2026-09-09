@@ -18,6 +18,8 @@ jobs:
 
           git pull origin master
 
+          chmod +x run-supquan-sync.sh
+
           NEW_COMMIT=$(git rev-parse HEAD)
 
           if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
