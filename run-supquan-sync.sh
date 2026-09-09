@@ -18,9 +18,9 @@ npm run sync >> "$LOG_FILE" 2>&1
 
 # Kiểm tra kết quả
 if [ $? -eq 0 ]; then
-  echo "$(date) - ✅ Sycn success" >> "$LOG_FILE"
+  echo "✅ Sycn success" >> "$LOG_FILE"
 else
-  echo "$(date) - ❌ Sycn fail" >> "$LOG_FILE"
+  echo "❌ Sycn fail" >> "$LOG_FILE"
 fi
 
 echo "========================================" >> "$LOG_FILE"
