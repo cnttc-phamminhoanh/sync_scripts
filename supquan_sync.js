@@ -21,7 +21,14 @@ const dbConfig = {
   options: {
     encrypt: true,
     trustServerCertificate: true,
+    connectTimeout: 60000,
+    requestTimeout: 60000,
   },
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000
+  }
 };
 
 async function syncData() {
@@ -42,8 +49,8 @@ async function syncData() {
                   o.sheet_no as po_no, o.sheet_id as po_id,
                   concat('addr: ', concat(s.su_addr, concat(' Payment Term: ', c.pay_con_desc))) as rem,
                   left(g.goods_no, 2) as mat_type, 
-                  case when left(g.goods_no, 2) = 'M1' then concat(g.goods_type, concat(' - ', t.goods_type_desc)) else '' end as goods_type, 
-                  case when left(g.goods_no, 2) = 'M1' then g.goods_type else null end as goods_type_code,
+                  case when left(g.goods_no, 2) in ('M1', 'M4') then concat(g.goods_type, concat(' - ', t.goods_type_desc)) else '' end as goods_type, 
+                  case when left(g.goods_no, 2) in ('M1', 'M4') then g.goods_type else null end as goods_type_code,
                   o.su_del_date, n.sheet_date as notice_date, case when n.return_qty > 0 then 1 else 0 end as return_mat, 
                   case when datediff(day, isnull(n.sheet_date, getdate()), isnull(o.su_del_date, n.sheet_date)) < 0 then 1 else 0 end as late_ship
               from bas_supply s
@@ -52,7 +59,7 @@ async function syncData() {
               inner join bas_goods g with(nolock) on g.goods_no = o.goods_no
               left join bas_goods_type t with(nolock) on t.goods_type = g.goods_type 
               left join v_pur_notice_detail n with(nolock) on n.pur_no = o.sheet_no and n.pur_id = o.sheet_id 
-              where left(o.goods_no, 2) in ('M1', 'M2', 'M3') and o.sheet_date >= dateadd(day, -365, cast(getdate() as date))
+              where left(o.goods_no, 2) in ('M1', 'M2', 'M3', 'M4', 'M5', 'M6')
           ) x
           group by supplier, x.rem, mat_type, goods_type, goods_type_code
       ) x
