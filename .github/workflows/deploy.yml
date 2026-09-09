@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to Server
 
 on:
   push:
@@ -10,33 +10,27 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Pull latest code
+      - name: Update source code
         run: |
           cd /home/germton/germton_services/sync_scripts
-
-          OLD_COMMIT=$(git rev-parse HEAD)
-
-          git pull origin master
-
-          chmod +x run-supquan-sync.sh
-
-          NEW_COMMIT=$(git rev-parse HEAD)
-
-          if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
-            echo "Code updated from $OLD_COMMIT to $NEW_COMMIT"
-            
-            if git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "package.json"; then
-              echo "📦 package.json changed, running npm install..."
-              npm install
-            fi
-            
-            echo "Deployment completed at $(date)"
-          else
-            echo "No code changes"
-          fi
-
-      - name: Show current version
-        run: |
-          cd /home/germton/germton_services/sync_scripts
+          git fetch origin master
+          git reset --hard origin/master
+          git clean -fd
+          echo "✅ Code updated at $(date)"
           echo "📋 Current commit: $(git rev-parse --short HEAD)"
-          echo "📋 Last commit message: $(git log -1 --pretty=%B)"
+
+      - name: Setup permissions
+        run: |
+          cd /home/germton/germton_services/sync_scripts
+          chmod +x run-supquan-sync.sh
+          echo "✅ Permissions set"
+
+      - name: Install dependencies (if needed)
+        run: |
+          cd /home/germton/germton_services/sync_scripts
+          if git diff HEAD^ HEAD --name-only | grep -q "package.json"; then
+            echo "📦 package.json changed, running npm install..."
+            npm install
+          else
+            echo "No dependency changes"
+          fi
