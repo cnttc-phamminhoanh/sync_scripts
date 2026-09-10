@@ -6,6 +6,9 @@ PROJECT_DIR="/home/germton/germton_services/sync_scripts"
 # Đường dẫn log file
 LOG_FILE="$PROJECT_DIR/supquan-sync.log"
 
+# Thêm npm/node vào PATH
+export PATH="/home/germton/.nvm/versions/node/v22.23.2/bin:$PATH"
+
 # Chuyển đến thư mục dự án
 cd "$PROJECT_DIR" || exit 1
 
